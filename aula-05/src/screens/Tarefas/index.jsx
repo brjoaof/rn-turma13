@@ -12,16 +12,56 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import ListaTarefas from "../../components/ListaTarefas";
 
 const Tarefas = () => {
-  const [novaTarefa, setNovaTarefa] = useState("Nova Tarefa");
-  const [listaTarefas, setListaTarefas] = useState([1, 2, 3, 4]);
+  const [novaTarefa, setNovaTarefa] = useState("");
+  const [listaTarefas, setListaTarefas] = useState([]);
+  const [estaEditando, setEstaEditando] = useState({
+    status: false,
+    id: 0,
+  });
 
   const adicionarTarefa = () => {
     if (novaTarefa == "") return;
 
-    setListaTarefas([...listaTarefas, novaTarefa]);
-    setNovaTarefa("");
+    const tarefa = {
+      id: new Date().getTime(),
+      titulo: novaTarefa,
+      estaConcluida: false,
+      prioridade: "normal",
+    };
 
-    console.log([...listaTarefas, novaTarefa]);
+    setListaTarefas([...listaTarefas, tarefa]);
+    setNovaTarefa("");
+  };
+
+  const excluirTarefa = (id) => {
+    //excluir uma tarefa
+    const novoArray = listaTarefas.filter((tarefa) => tarefa.id != id);
+    setListaTarefas(novoArray);
+  };
+
+  const editarTarefa = (item) => {
+    setEstaEditando({ status: true, id: item.id });
+    setNovaTarefa(item.titulo);
+  };
+
+  const salvarAlteracoes = () => {
+    const tarefa = {
+      id: estaEditando.id,
+      titulo: novaTarefa,
+      estaConcluida: false,
+      prioridade: "normal",
+    };
+
+    const arrayEditado = listaTarefas.map((item) => {
+      if (item.id == tarefa.id) {
+        return tarefa;
+      }
+      return item;
+    });
+
+    setListaTarefas(arrayEditado);
+    setNovaTarefa("");
+    setEstaEditando({ status: false, id: 0 });
   };
 
   return (
@@ -48,8 +88,15 @@ const Tarefas = () => {
         }}
         placeholder="Adicione uma tarefa"
       />
-
-      <Button title="Adicionar Tarefa +" onPress={adicionarTarefa} />
+      {!estaEditando.status ? (
+        <Button title="Adicionar Tarefa +" onPress={adicionarTarefa} />
+      ) : (
+        <Button
+          color="green"
+          title="Salvar Alterações"
+          onPress={salvarAlteracoes}
+        />
+      )}
 
       {/* <TouchableOpacity
         style={{
@@ -67,9 +114,11 @@ const Tarefas = () => {
         </Text>
       ))} */}
 
-      {/* Componentizar a Lista de Tarefas */}
-
-      <ListaTarefas listaTarefas={listaTarefas} />
+      <ListaTarefas
+        listaTarefas={listaTarefas}
+        excluirTarefa={excluirTarefa}
+        editarTarefa={editarTarefa}
+      />
     </View>
   );
 };
