@@ -16,7 +16,9 @@ const ListaTarefas = ({ listaTarefas, excluirTarefa, editarTarefa }) => {
             alignItems: "center",
           }}
         >
-          <Text style={{ color: "#f1f1f1", fontSize: 35 }}>{item.titulo}</Text>
+          <Text maxLength="10" style={{ color: "#f1f1f1", fontSize: 35 }}>
+            {item.titulo}
+          </Text>
           <View
             style={{ flexDirection: "row", alignItems: "baseline", gap: 6 }}
           >

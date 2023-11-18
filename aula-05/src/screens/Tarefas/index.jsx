@@ -7,9 +7,10 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesome5 } from "@expo/vector-icons";
 import ListaTarefas from "../../components/ListaTarefas";
+import api from "../../services/api";
 
 const Tarefas = () => {
   const [novaTarefa, setNovaTarefa] = useState("");
@@ -19,24 +20,41 @@ const Tarefas = () => {
     id: 0,
   });
 
-  const adicionarTarefa = () => {
+  const obterTarefas = async () => {
+    try {
+      const { data } = await api.get("/listadetarefas");
+      setListaTarefas(data);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const adicionarTarefa = async () => {
     if (novaTarefa == "") return;
 
     const tarefa = {
-      id: new Date().getTime(),
       titulo: novaTarefa,
       estaConcluida: false,
       prioridade: "normal",
     };
 
-    setListaTarefas([...listaTarefas, tarefa]);
-    setNovaTarefa("");
+    try {
+      const { data } = await api.post("/listadetarefas", tarefa);
+      setListaTarefas([...listaTarefas, data]);
+      setNovaTarefa("");
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const excluirTarefa = (id) => {
-    //excluir uma tarefa
-    const novoArray = listaTarefas.filter((tarefa) => tarefa.id != id);
-    setListaTarefas(novoArray);
+  const excluirTarefa = async (id) => {
+    try {
+      const { data } = await api.delete("/listadetarefas/" + id);
+      const novoArray = listaTarefas.filter((tarefa) => tarefa.id != data.id);
+      setListaTarefas(novoArray);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const editarTarefa = (item) => {
@@ -45,6 +63,7 @@ const Tarefas = () => {
   };
 
   const salvarAlteracoes = () => {
+    //Implementar api.put("/listadetarefas/:id", {})
     const tarefa = {
       id: estaEditando.id,
       titulo: novaTarefa,
@@ -63,6 +82,10 @@ const Tarefas = () => {
     setNovaTarefa("");
     setEstaEditando({ status: false, id: 0 });
   };
+
+  useEffect(() => {
+    [obterTarefas()];
+  }, []);
 
   return (
     <View style={styles.container}>

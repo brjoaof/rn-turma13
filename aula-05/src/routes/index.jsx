@@ -10,7 +10,6 @@ const Rotas = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Requests" component={Requests} />
         <Stack.Screen
           name="Tarefas"
           component={Tarefas}
@@ -19,6 +18,7 @@ const Rotas = () => {
           }}
         />
         <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Requests" component={Requests} />
       </Stack.Navigator>
     </NavigationContainer>
   );
